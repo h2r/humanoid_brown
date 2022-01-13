@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>humanoid_description</name>
+  <version>0.0.0</version>
+  <description>The humanoid_description package</description>
+
+  <maintainer email="abba@todo.todo">abba</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>iiwa_description</build_depend>
+  <build_export_depend>iiwa_description</build_export_depend>
+  <exec_depend>iiwa_description</exec_depend>
+
+</package>
