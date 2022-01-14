@@ -19,9 +19,8 @@
     <!-- TODO: schunk packages here -->
     
     <!-- rviz bringup -->
-    <include file="$(find iiwa_robotiq_moveit_config)/launch/moveit_planning_execution.launch">
+    <!-- <include file="$(find iiwa_robotiq_moveit_config)/launch/moveit_planning_execution.launch">
       <arg name="sim" value="false"/>
       <arg name="rviz" value="$(arg rviz_moveit)"/>
-    </include>
- -->    
+    </include>     -->
 </launch>
