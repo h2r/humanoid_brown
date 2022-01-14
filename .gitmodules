@@ -1,3 +1,9 @@
 [submodule "iiwa_stack"]
 	path = iiwa_stack
 	url = git@github.com:IFL-CAMP/iiwa_stack.git
+[submodule "flir_ptu"]
+	path = flir_ptu
+	url = git@github.com:ros-drivers/flir_ptu.git
+[submodule "serial"]
+	path = serial
+	url = https://github.com/wjwwood/serial
