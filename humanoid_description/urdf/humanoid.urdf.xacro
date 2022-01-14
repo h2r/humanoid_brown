@@ -39,12 +39,12 @@
   </link>
 
    <!-- Here we insert the (left) iiwa7 robot in the scene-->
-  <xacro:iiwa7 hardware_interface="$(arg hardware_interface)" robot_name="iiwa_left" parent="world">
+  <xacro:iiwa7 hardware_interface="$(arg hardware_interface)" robot_name="iiwa_left" parent="torso">
     <origin xyz="0.15 0.33 1.35" rpy="0 1.57 0"/>
   </xacro:iiwa7>
 
   <!-- Here we insert the (right) iiwa7 robot in the scene-->
-  <xacro:iiwa7 hardware_interface="$(arg hardware_interface)" robot_name="iiwa_right" parent="world">
+  <xacro:iiwa7 hardware_interface="$(arg hardware_interface)" robot_name="iiwa_right" parent="torso">
     <origin xyz="0.15 -0.33 1.35" rpy="0 1.57 0"/>
   </xacro:iiwa7>
 </robot> 
