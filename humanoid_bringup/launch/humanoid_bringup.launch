@@ -2,7 +2,10 @@
 <launch>
     <!-- <arg name="hand_ip" default="138.16.161.44" /> -->
     <arg name="rviz_moveit" default="false" />
-    
+
+    <!-- define humanoid1 -->
+    <machine name="h1" address="humanoid1" default="false" env-loader="/opt/ros/melodic/humanoid_env.bash"/>
+
     <!-- Converts joint states to TF transforms for rviz, etc -->
     <!-- Launch one node for each arm -->
     <node name="robot_state_publisher_left" pkg="robot_state_publisher" type="robot_state_publisher"
@@ -17,7 +20,14 @@
     </node>
 
     <!-- TODO: schunk packages here -->
-    
+
+    <!-- launch flir_ptu_driver on humanoid1-->
+    <node machine="h1" name="ptu_driver" pkg="flir_ptu_driver" type="ptu_node" ns="ptu" respawn="true">
+	<param name="port" value="/dev/ttyUSB0" />
+        <param name="limits_enabled" value="false" />
+        <remap from="state" to="/joint_states" />
+    </node>
+
     <!-- rviz bringup -->
     <!-- <include file="$(find iiwa_robotiq_moveit_config)/launch/moveit_planning_execution.launch">
       <arg name="sim" value="false"/>
