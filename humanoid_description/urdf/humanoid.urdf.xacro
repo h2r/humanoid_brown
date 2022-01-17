@@ -10,19 +10,20 @@
   <!--  Arguments for the iiwa7 macro  -->
   <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
 
+  <!-- Define world -->
   <link name="world">
     <origin xyz ="0.0 0.0 0.0" rpy="0 0 0"/>
   </link>
   <gazebo reference="world">
     <static>true</static>
   </gazebo>
- 
  <joint name="world_to_torso" type="fixed">
     <parent link="world"/>
     <child link="torso"/>
     <origin xyz ="0.0 0.0 0.0" rpy="0 0 0"/>
   </joint>
 
+  <!-- Define torso from Vention -->
   <link name="torso">
     <visual>
       <origin rpy="1.57 0  1.57" xyz="0.85 -.44 1.4"/>
@@ -47,4 +48,15 @@
   <xacro:iiwa7 hardware_interface="$(arg hardware_interface)" robot_name="iiwa_right" parent="torso">
     <origin xyz="0.15 -0.33 1.35" rpy="0 1.57 0"/>
   </xacro:iiwa7>
+
+ <!-- Include and invoke the macro which creates a D46 PTU -->
+  <xacro:include filename="$(find flir_ptu_description)/urdf/d46.urdf.xacro" />
+  <xacro:ptu_d46 name="ptu" />
+
+  <!-- Create a fixed joint to connect the PTU to the rest of the robot -->
+  <joint name="torso_to_ptu_base" type="fixed">
+    <parent link="torso"/>
+    <child link="ptu_base_link"/>
+    <origin xyz="0.1 -0.01 1.54"/>
+  </joint>
 </robot> 
