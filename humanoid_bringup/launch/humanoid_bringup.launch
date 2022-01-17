@@ -6,27 +6,39 @@
     <!-- define humanoid1 -->
     <machine name="h1" address="humanoid1" default="false" env-loader="/opt/ros/melodic/humanoid_env.bash"/>
 
+    <!-- upload description -->
+    <include file="$(find humanoid_description)/launch/humanoid_description.launch"/>
+
     <!-- Converts joint states to TF transforms for rviz, etc -->
     <!-- Launch one node for each arm -->
-    <node name="robot_state_publisher_left" pkg="robot_state_publisher" type="robot_state_publisher"
-          respawn="false" output="screen">
-          <param name="use_tf_static" value="true"/>
-        <remap from="joint_states" to="/iiwa_left/joint_states" />
+    <node name="robot_state_publisher_left" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+      <param name="use_tf_static" value="true"/>
+      <remap from="joint_states" to="/iiwa_left/joint_states" />
     </node>
-    <node name="robot_state_publisher_right" pkg="robot_state_publisher" type="robot_state_publisher"
-          respawn="false" output="screen">
-          <param name="use_tf_static" value="true"/>
-        <remap from="joint_states" to="/iiwa_right/joint_states" />
+    <node name="robot_state_publisher_right" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+      <param name="use_tf_static" value="true"/>
+      <remap from="joint_states" to="/iiwa_right/joint_states" />
     </node>
 
     <!-- TODO: schunk packages here -->
 
-    <!-- launch flir_ptu_driver on humanoid1-->
+    <!-- launch flir_ptu_driver, tf publisher on humanoid1-->
     <node machine="h1" name="ptu_driver" pkg="flir_ptu_driver" type="ptu_node" ns="ptu" respawn="true">
-	<param name="port" value="/dev/ttyUSB0" />
-        <param name="limits_enabled" value="false" />
-        <remap from="state" to="/joint_states" />
+	    <param name="port" value="/dev/ttyUSB0" />
+      <param name="limits_enabled" value="false" />
+      <remap from="state" to="/ptu/joint_states" />
     </node>
+    <node machine="h1" name="robot_state_publisher_ptu" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" ns="ptu">
+      <param name="use_tf_static" value="true"/>
+      <remap from="joint_states" to="/ptu/joint_states" />
+    </node>
+
+    <!-- launch structure core. -->
+    <!-- note: this launches nodes on h1 EXCEPT the pointcloud node, which is run on the default machine (h0) -->
+    <include file="$(find humanoid_bringup)/launch/humanoid_structure_core.launch">
+      <arg name="machine" value="h1"/>
+      <arg name="depth_pcloud_enable" value="true"/>
+    </include>
 
     <!-- rviz bringup -->
     <!-- <include file="$(find iiwa_robotiq_moveit_config)/launch/moveit_planning_execution.launch">

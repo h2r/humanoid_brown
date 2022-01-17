@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="required" default="false" />
+ 	<arg name="serial_number" default="null" />
+	<arg name="name" default="sc" />
+	<arg name="machine" default="h1" />
+	
+	<arg name="visible_enable" default="true" />
+	<arg name="visible_apply_gamma_correction" default="false" />
+	<arg name="visible_framerate" default="30.0" />
+	<arg name="visible_resolution" default="Default" />
+	
+	<arg name="infrared_enable" default="false" />
+	<arg name="infrared_framerate" default="30.0" />
+	<arg name="infrared_mode" default="Default" />
+	<arg name="infrared_resolution" default="Default" />
+	<arg name="infrared_disable_intensity_balance" default="true" />
+	
+	<arg name="imu_enable" default="true" />
+	<arg name="imu_update_rate" default="Default" />
+	
+	<arg name="depth_enable" default="true" />
+	<arg name="depth_aligned_enable" default="false" />
+	<arg name="depth_pcloud_enable" default="false" />
+	<arg name="depth_framerate" default="30.0" />
+	<arg name="depth_resolution" default="Default" />
+	<arg name="depth_apply_correction_before_stream" default="false" />
+		
+	<arg name="demosaic_method" default="EdgeAware" />
+	<arg name="initial_projector_power" default="1.0" />
+	<arg name="latency_reducer_enabled" default="true" />
+	<arg name="sensor_initialization_timeout" default="20000" />
+	<arg name="frame_sync_enabled" default="true" />
+	<arg name="rgbd_enable" default="false" />
+	<arg name="remove_nans" default="false" />
+	<arg name="rviz_frame" default="false" />
+	<arg name="ros_odometry" default="false" />
+	
+
+	<node machine="$(arg machine)" pkg="nodelet" type="nodelet" name="$(arg name)_node" args="manager" output="screen" required="$(arg required)"/>
+
+	 <node machine="$(arg machine)" pkg="nodelet" type="nodelet" name="$(arg name)_nodelet" args="load structure_core/Driver $(arg name)_node" output="screen" required="$(arg required)">
+
+	 	<param name="name"                                      value="$(arg name)" />
+
+	 	<param name="visible_enable"                            value="$(arg visible_enable)" />
+		<param name="visible_apply_gamma_correction"            value="$(arg visible_apply_gamma_correction)" />
+		<param name="visible_framerate"                         value="$(arg visible_framerate)" />
+		<param name="visible_resolution"                        value="$(arg visible_resolution)" /> <!--HowMany-->
+		<param name="infrared_enable"                           value="$(arg infrared_enable)" />
+		<param name="infrared_framerate"                        value="$(arg infrared_framerate)" />
+		<param name="infrared_mode"                             value="$(arg infrared_mode)" /> <!--HowMany, BothCameras, RightCameraOnly, LeftCameraOnly-->
+		<param name="infrared_resolution"                       value="$(arg infrared_resolution)" /> <!--HowMany-->
+		<param name="infrared_disable_intensity_balance"        value="$(arg infrared_disable_intensity_balance)" /> 
+		<param name="imu_enable"                                value="$(arg imu_enable)" />
+		<param name="imu_update_rate"            				value="$(arg imu_update_rate)" /> <!--HowMany, AccelAndGyro_1000Hz, AccelAndGyro_800Hz, AccelAndGyro_200Hz, AccelAndGyro_100Hz--> 
+		<param name="depth_enable"     	    					value="$(arg depth_enable)" />
+		<param name="depth_aligned_enable"     	    			value="$(arg depth_aligned_enable)" />
+		<param name="depth_framerate"       					value="$(arg depth_framerate)" />
+		<param name="depth_resolution"     						value="$(arg depth_resolution)" /> <!--SXGA, VGA, QVGA, HowMany, _1280x960, _640x480, _320x240--> 
+		<param name="depth_apply_correction_before_stream"      value="$(arg depth_apply_correction_before_stream)" />
+		<param name="demosaic_method"      					    value="$(arg demosaic_method)" /> <!-- Bilinear, Grouping, HowMany, Default-->
+		<param name="initial_projector_power"             		value="$(arg initial_projector_power)" /> <!--0.0 ... 1.0-->
+		<param name="latency_reducer_enabled"       			value="$(arg latency_reducer_enabled)" />
+		<param name="sensor_initialization_timeout"      		value="$(arg sensor_initialization_timeout)" />
+		<param name="sensor_serial"                  type="str" value="$(arg serial_number)" />
+		<param name="frame_sync_enabled"                        value="$(arg frame_sync_enabled)" />
+	 </node>
+
+
+	<node if="$(arg rgbd_enable)" pkg="nodelet" type="nodelet" name="$(arg name)_PointCloudXyzrgbNodelet"
+        args="load structure_core/PointCloudXyzrgbNodelet $(arg name)_node"  output="screen">
+        <param name="name"                                value="$(arg name)" />
+        <param name="queue_size"                          value="50" />
+        <param name="remove_nans"                         value="$(arg remove_nans)" />
+        <param name="rviz_frame"                          value="$(arg rviz_frame)" />
+    </node>
+
+    <node if="$(arg depth_pcloud_enable)" pkg="nodelet" type="nodelet" name="$(arg name)_PointCloudXyzNodelet"
+        args="load structure_core/PointCloudXyzNodelet $(arg name)_node"  output="screen">
+        <param name="name"                                value="$(arg name)" />
+        <param name="queue_size"                          value="50" />
+        <param name="remove_nans"                         value="$(arg remove_nans)" />
+        <param name="rviz_frame"                          value="$(arg rviz_frame)" />
+    </node>
+
+
+	<group unless="$(arg ros_odometry)">
+  		<node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="$(arg name)_tf_broadcaster"  args="0 0 0 0 0 0 $(arg name)_map $(arg name)_depth_frame 50" />
+	    <node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="$(arg name)_tf_imu_broadcaster"  args="0 0 0 0 0 0 $(arg name)_map $(arg name)_imu_frame 50" />-->
+	    <node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="$(arg name)_tf_pc_broadcaster"  args="0 0 0 0 0 0 $(arg name)_map $(arg name)_cloud_tf_frame 50" />-->
+	</group>
+	
+</launch>
