@@ -27,13 +27,13 @@
     <visual>
       <origin rpy="1.57 0  1.57" xyz="0.85 -.44 1.4"/>
       <geometry>
-         <mesh filename="package://humanoid_description/urdf/torso.stl" scale="0.001 0.001 0.001"/>
+         <mesh filename="package://humanoid_description/meshes/VentionAssembly_159315_v38.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </visual>
      <collision>
       <origin rpy="1.57 0  1.57" xyz="0.85 -.44 1.4"/>
       <geometry>
-         <mesh filename="package://humanoid_description/urdf/torso.stl" scale="0.001 0.001 0.001"/>
+         <mesh filename="package://humanoid_description/meshes/VentionAssembly_159315_v38.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
