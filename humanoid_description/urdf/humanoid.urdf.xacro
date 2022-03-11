@@ -59,4 +59,15 @@
     <child link="ptu_base_link"/>
     <origin xyz="0.1 -0.01 1.54"/>
   </joint>
+
+  <!-- PTU to SC -->
+  <joint name="ptu_to_sc" type="fixed">
+    <parent link="ptu_mount_link"/>
+    <child link="sc_map"/>
+    <origin xyz="0.0 0.0 0" rpy="-1.570 0 -1.57"/>
+  </joint>
+
+  <link name="sc_map">
+    <origin xyz ="0.0 0.0 0" rpy="0 0 0"/>
+  </link>
 </robot> 
