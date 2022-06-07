@@ -7,3 +7,6 @@
 [submodule "serial"]
 	path = serial
 	url = https://github.com/wjwwood/serial
+[submodule "schunk_modular_robotics"]
+	path = schunk_modular_robotics
+	url = https://github.com/ipa320/schunk_modular_robotics.git
