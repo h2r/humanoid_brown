@@ -10,6 +10,11 @@
   <!--  Arguments for the iiwa7 macro  -->
   <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
 
+  <!--  Edit  -->
+  <!--Import the schunk sdh macro -->
+  <xacro:include filename="$(find schunk_description)/urdf/sdh/sdh.urdf.xacro"/>
+  <!--  Edit  -->
+
   <!-- Define world -->
   <link name="world">
     <origin xyz ="0.0 0.0 0.0" rpy="0 0 0"/>
@@ -48,6 +53,52 @@
   <xacro:iiwa7 hardware_interface="$(arg hardware_interface)" robot_name="iiwa_right" parent="torso">
     <origin xyz="0.15 -0.33 1.35" rpy="0 1.57 0"/>
   </xacro:iiwa7>
+
+  <!--  Edit  -->
+
+<!--   <link name="ft_sensor_right">
+    <visual>
+      <geometry>
+         <box size="0.3 0.3 0.01"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="0.5 0.0 0.5 1"/>
+      </material>
+    </visual>
+     <collision>
+      <geometry>
+         <box size="0.3 0.3 0.01"/>
+      </geometry>
+    </collision>
+
+
+  <joint name="iiwa_right_to_ft_sensor_right" type="fixed">
+    <parent link="iiwa_right_link_ee"/>
+    <child link="ft_sensor_right"/>
+    <origin xyz="0.0 0.0 0.01"/> 
+  </joint>
+  </link> -->
+
+  <!--Here we insert the (right) Schunk SDH2 in the scene -->
+  <xacro:schunk_sdh name="schunk_right" parent="iiwa_right_link_ee">
+    <origin xyz="0 0 0.01" rpy="0 0 0"/>
+  </xacro:schunk_sdh>
+
+  <!-- define SchunkRight_ee_link such that iiwa_ros finds the tool frame -->
+  <joint name="right_ee_fixed" type="fixed">
+    <parent link="iiwa_right_link_ee" />
+    <child link="SchunkRight_link_ee"/>
+    <origin xyz="0 0 0.134"/>
+  </joint>
+  <link name="SchunkRight_link_ee"/>
+
+<!--   <joint name="iiwa_right_to_schunk_right" type="fixed">
+    <parent link="iiwa_right_joint_ee"/>
+    <child link="schunk_right"/>
+    <origin xyz="0 0 0.1"/>
+  </joint> -->
+
+  <!--  Edit  -->
 
  <!-- Include and invoke the macro which creates a D46 PTU -->
   <xacro:include filename="$(find flir_ptu_description)/urdf/d46.urdf.xacro" />
