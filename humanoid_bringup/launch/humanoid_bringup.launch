@@ -52,4 +52,11 @@
       <arg name="sim" value="false"/>
       <arg name="rviz" value="$(arg rviz_moveit)"/>
     </include>     -->
+
+
+    <!-- publish combined joint states-->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+        <rosparam param="/source_list">[/iiwa_right/joint_states,/iiwa_left/joint_states,/ptu/joint_states]</rosparam>
+    </node>
+
 </launch>

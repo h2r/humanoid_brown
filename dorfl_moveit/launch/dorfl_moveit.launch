@@ -15,9 +15,10 @@
     <arg name="rviz" default="true" />
     
     <remap from="/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory" 
-           to="/iiwa_right/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory" />
-    <remap from="robot_description" to="/iiwa_right/robot_description" /> 
-    <remap from="/get_planning_scene" to="/iiwa_right/get_planning_scene" />
+           to="/iiwa_right/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory"/>
+
+    <!-- <remap from="robot_description" to="/iiwa_right/robot_description" />  -->
+    <!-- <remap from="/get_planning_scene" to="/iiwa_right/get_planning_scene" /> -->
     
     <!-- Run the robot within a Gazebo simulation. -->
     <group if="$(arg sim)">
@@ -50,9 +51,12 @@
         </include>
             
     </group>
-    
+
     <!-- Load move_group -->
     <group ns="iiwa_right">
+        
+        <remap from="/iiwa_right/joint_states/" to="/joint_states"/>
+
         <include file="$(find dorfl_moveit)/launch/move_group.launch">
             <arg name="publish_monitored_planning_scene" value="true" />
             <arg name="hardware_interface" value="$(arg hardware_interface)"/>
