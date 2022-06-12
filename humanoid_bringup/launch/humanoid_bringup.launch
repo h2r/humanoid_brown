@@ -11,14 +11,21 @@
 
     <!-- Converts joint states to TF transforms for rviz, etc -->
     <!-- Launch one node for each arm -->
-    <node name="robot_state_publisher_left" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
-      <param name="use_tf_static" value="true"/>
-      <remap from="joint_states" to="/iiwa_left/joint_states" />
-    </node>
-    <node name="robot_state_publisher_right" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
-      <param name="use_tf_static" value="true"/>
-      <remap from="joint_states" to="/iiwa_right/joint_states" />
-    </node>
+    <group ns="iiwa_left">
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+        <param name="use_tf_static" value="false"/>
+        <remap from="joint_states" to="/iiwa_left/joint_states" />
+      </node>
+    </group>
+    
+    <group ns="iiwa_right">
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+        <param name="use_tf_static" value="false"/>
+        <remap from="joint_states" to="/iiwa_right/joint_states" />
+      </node>
+    </group>
+
+    <param name="/iiwa_right/toolName" type="string" value="SchunkRight"/>
 
     <!-- TODO: schunk packages here -->
 
