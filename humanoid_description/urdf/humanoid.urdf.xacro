@@ -54,34 +54,31 @@
     <origin xyz="0.15 -0.33 1.35" rpy="0 1.57 0"/>
   </xacro:iiwa7>
 
-  <!--  Edit  -->
+  <joint name="iiwa_right_to_ft_sensor_right" type="fixed">
+    <parent link="iiwa_right_link_ee"/>
+    <child link="ft_sensor_right"/>
+    <origin xyz="0.0 0.0 0.0635"/> 
+  </joint>
 
-<!--   <link name="ft_sensor_right">
+  <link name="ft_sensor_right">
     <visual>
       <geometry>
-         <box size="0.3 0.3 0.01"/>
+         <cylinder radius="0.0508" length="0.127"/>
       </geometry>
       <material name="yellow">
-        <color rgba="0.5 0.0 0.5 1"/>
+        <color rgba="0.75 0.75 0.75 1"/>
       </material>
     </visual>
      <collision>
       <geometry>
-         <box size="0.3 0.3 0.01"/>
+         <cylinder radius="0.0508" length="0.127"/>
       </geometry>
     </collision>
-
-
-  <joint name="iiwa_right_to_ft_sensor_right" type="fixed">
-    <parent link="iiwa_right_link_ee"/>
-    <child link="ft_sensor_right"/>
-    <origin xyz="0.0 0.0 0.01"/> 
-  </joint>
-  </link> -->
+  </link>
 
   <!--Here we insert the (right) Schunk SDH2 in the scene -->
-  <xacro:schunk_sdh name="schunk_right" parent="iiwa_right_link_ee">
-    <origin xyz="0 0 0.01" rpy="0 0 0"/>
+  <xacro:schunk_sdh name="schunk_right" parent="ft_sensor_right">
+    <origin xyz="0 0 0.0635" rpy="0 0 -1.8"/>
   </xacro:schunk_sdh>
 
   <!-- define SchunkRight_ee_link such that iiwa_ros finds the tool frame -->
@@ -90,6 +87,7 @@
     <child link="SchunkRight_link_ee"/>
     <origin xyz="0 0 0.134"/>
   </joint>
+
   <link name="SchunkRight_link_ee"/>
 
 <!--   <joint name="iiwa_right_to_schunk_right" type="fixed">
@@ -108,14 +106,15 @@
   <joint name="torso_to_ptu_base" type="fixed">
     <parent link="torso"/>
     <child link="ptu_base_link"/>
-    <origin xyz="0.1 -0.01 1.54"/>
+    <origin xyz="0.11 -0.01 1.54"/>
   </joint>
 
   <!-- PTU to SC -->
   <joint name="ptu_to_sc" type="fixed">
     <parent link="ptu_mount_link"/>
     <child link="sc_map"/>
-    <origin xyz="0.0 0.0 0" rpy="-1.570 0 -1.57"/>
+    <!-- <origin xyz="0.0206375 0.0 0.01905" rpy="-1.570 0 -1.57"/> -->
+    <origin xyz="0.01 0.0 0.0" rpy="-1.570 0 -1.57"/>
   </joint>
 
   <link name="sc_map">
@@ -123,7 +122,7 @@
   </link>
 
   <!-- APPROXIMATE TABLE HEIGHT -->
-  <joint name="world_to_table" type="fixed">
+  <!-- <joint name="world_to_table" type="fixed">
     <parent link="world"/>
     <child link="table"/>
     <origin xyz="0.0 0.0 0.75087592"/> 
@@ -142,5 +141,5 @@
          <box size="5.0 5.0 0.01"/>
       </geometry>
     </collision>
-  </link>
+  </link> -->
 </robot> 
