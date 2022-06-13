@@ -13,3 +13,6 @@
 [submodule "schunk_robots"]
 	path = schunk_robots
 	url = git@github.com:ipa320/schunk_robots.git
+[submodule "SchunkHandBringupPackage"]
+	path = SchunkHandBringupPackage
+	url = git@github.com:h2r/SchunkHandBringupPackage.git
