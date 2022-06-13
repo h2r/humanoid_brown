@@ -47,16 +47,19 @@
       <arg name="depth_pcloud_enable" value="true"/>
     </include>
 
+    <!-- launch right gripper -->
+    <include file="$(find schunk_bringup)/launch/schunk_bringup.launch"/>
+    <node pkg="rosservice" type="rosservice" name="global_loc" args="call --wait /sdh_controller/init" />
+
+    <!-- publish combined joint states-->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+        <rosparam param="/source_list">[/iiwa_right/joint_states,/iiwa_left/joint_states,/ptu/joint_states,/sdh_controller/joint_states/]</rosparam>
+    </node>
+
     <!-- rviz bringup -->
     <!-- <include file="$(find iiwa_robotiq_moveit_config)/launch/moveit_planning_execution.launch">
       <arg name="sim" value="false"/>
       <arg name="rviz" value="$(arg rviz_moveit)"/>
     </include>     -->
-
-
-    <!-- publish combined joint states-->
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
-        <rosparam param="/source_list">[/iiwa_right/joint_states,/iiwa_left/joint_states,/ptu/joint_states]</rosparam>
-    </node>
 
 </launch>
