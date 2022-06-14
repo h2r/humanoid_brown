@@ -60,52 +60,6 @@ left_arm_controller:
       d: 1
       i: 1
       i_clamp: 1
-right_hand_controller:
-  type: effort_controllers/JointTrajectoryController
-  joints:
-    - schunk_right_finger_22_joint
-    - schunk_right_finger_23_joint
-    - schunk_right_knuckle_joint
-    - schunk_right_finger_12_joint
-    - schunk_right_finger_13_joint
-    - schunk_right_thumb_2_joint
-    - schunk_right_thumb_3_joint
-  gains:
-    schunk_right_finger_22_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    schunk_right_finger_23_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    schunk_right_knuckle_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    schunk_right_finger_12_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    schunk_right_finger_13_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    schunk_right_thumb_2_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    schunk_right_thumb_3_joint:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
 right_arm_controller:
   type: effort_controllers/JointTrajectoryController
   joints:
@@ -148,6 +102,52 @@ right_arm_controller:
       i: 1
       i_clamp: 1
     iiwa_right_joint_7:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+right_hand_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - schunk_right_finger_22_joint
+    - schunk_right_finger_23_joint
+    - schunk_right_knuckle_joint
+    - schunk_right_finger_12_joint
+    - schunk_right_finger_13_joint
+    - schunk_right_thumb_2_joint
+    - schunk_right_thumb_3_joint
+  gains:
+    schunk_right_finger_22_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    schunk_right_finger_23_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    schunk_right_knuckle_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    schunk_right_finger_12_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    schunk_right_finger_13_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    schunk_right_thumb_2_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    schunk_right_thumb_3_joint:
       p: 100
       d: 1
       i: 1

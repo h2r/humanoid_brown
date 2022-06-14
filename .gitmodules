@@ -16,3 +16,6 @@
 [submodule "SchunkHandBringupPackage"]
 	path = SchunkHandBringupPackage
 	url = git@github.com:h2r/SchunkHandBringupPackage.git
+[submodule "motor_skills"]
+	path = motor_skills
+	url = git@github.com:babbatem/motor_skills.git

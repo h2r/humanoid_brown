@@ -63,7 +63,7 @@
   <link name="ft_sensor_right">
     <visual>
       <geometry>
-         <cylinder radius="0.0508" length="0.127"/>
+         <cylinder radius="0.0508" length="0.125"/>
       </geometry>
       <material name="yellow">
         <color rgba="0.75 0.75 0.75 1"/>
@@ -71,7 +71,7 @@
     </visual>
      <collision>
       <geometry>
-         <cylinder radius="0.0508" length="0.127"/>
+         <cylinder radius="0.0508" length="0.125"/>
       </geometry>
     </collision>
   </link>
