@@ -1,6 +1,3 @@
-[submodule "iiwa_stack"]
-	path = iiwa_stack
-	url = git@github.com:IFL-CAMP/iiwa_stack.git
 [submodule "flir_ptu"]
 	path = flir_ptu
 	url = git@github.com:ros-drivers/flir_ptu.git
@@ -19,3 +16,6 @@
 [submodule "motor_skills"]
 	path = motor_skills
 	url = git@github.com:babbatem/motor_skills.git
+[submodule "iiwa_ros"]
+	path = iiwa_ros
+	url = git@github.com:epfl-lasa/iiwa_ros.git
