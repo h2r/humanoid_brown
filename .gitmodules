@@ -16,6 +16,3 @@
 [submodule "motor_skills"]
 	path = motor_skills
 	url = git@github.com:babbatem/motor_skills.git
-[submodule "iiwa_ros"]
-	path = iiwa_ros
-	url = git@github.com:epfl-lasa/iiwa_ros.git
