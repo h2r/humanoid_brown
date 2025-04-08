@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<!-- <?xml version="1.0"?>
 <launch>
     <!-- The planning and execution components of MoveIt! configured to run -->
     <!-- using the ROS-Industrial interface. -->
@@ -69,4 +69,4 @@
         </include>
     </group>
 
-</launch>
+</launch> -->
