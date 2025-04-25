@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<launch>
+    
+    <!-- <include file="$(find ar_track_alvar)/launch/pr2_indiv_no_kinect.launch">
+        <arg name="cam_image_topic" value="/multisense/left/image_color"/>
+        <arg name="cam_info_topic" value="/multisense/left/image_color/camera_info"/>
+        <arg name="output_frame" value="/torso"/>
+        <arg name="marker_size" value="4.1"/>
+    </include>
+
+
+    <include file="$(find ar_track_alvar)/launch/pr2_indiv.launch">
+        <arg name="cam_image_topic" value="/multisense/left/image_color"/>
+        <arg name="cam_info_topic" value="/multisense/left/orig_points"/>
+        <arg name="output_frame" value="/torso"/>
+        <arg name="marker_size" value="4.1"/>
+    </include> -->
+    <!-- Arguments that can be passed via command line -->
+    <arg name="camera_name" default="multisense"/>
+    <arg name="rgb_camera_info_topic" default="$(arg camera_name)/left/image_color/camera_info"/>
+    <arg name="rgb_image_topic" default="$(arg camera_name)/left/image_color"/>
+    <arg name="depth_camera_info_topic" default="$(arg camera_name)/depth/camera_info"/>
+    <arg name="depth_image_topic" default="$(arg camera_name)/depth"/>
+    <arg name="point_cloud_topic" default="$(arg camera_name)/left/depth_registered/points"/>
+
+    <!-- Set queue size for synchronization policy -->
+    <arg name="queue_size" default="10"/>
+
+    <!-- Nodelet manager for this pipeline -->
+    <node pkg="nodelet" type="nodelet" name="$(arg camera_name)_nodelet_manager" 
+            args="manager" output="screen"/>
+
+    <!-- Nodelet for depth image to XYZ point cloud conversion -->
+    <node pkg="nodelet" type="nodelet" name="depth_image_proc"
+            args="load depth_image_proc/point_cloud_xyz $(arg camera_name)_nodelet_manager">
+        <remap from="camera_info" to="$(arg depth_camera_info_topic)"/>
+        <remap from="image_rect" to="$(arg depth_image_topic)"/>
+        <remap from="points" to="$(arg camera_name)/depth/points"/>
+    </node>
+
+    <!-- Nodelet for point cloud registration with RGB data -->
+    <node pkg="nodelet" type="nodelet" name="point_cloud_xyzrgb"
+            args="load depth_image_proc/point_cloud_xyzrgb $(arg camera_name)_nodelet_manager">
+        <remap from="rgb/camera_info" to="$(arg rgb_camera_info_topic)"/>
+        <remap from="rgb/image_rect_color" to="$(arg rgb_image_topic)"/>
+        <remap from="depth_registered/image_rect" to="$(arg depth_image_topic)"/>
+        <remap from="depth_registered/points" to="$(arg point_cloud_topic)"/>
+        <param name="queue_size" value="$(arg queue_size)"/>
+    </node>
+
+    <!-- AR Tag tracking -->
+    <include file="$(find ar_track_alvar)/launch/pr2_indiv.launch">
+        <arg name="cam_image_topic" value="$(arg rgb_image_topic)"/>
+        <arg name="cam_info_topic" value="$(arg rgb_camera_info_topic)"/>
+        <arg name="output_frame" value="/torso"/>
+        <arg name="marker_size" value="4.1"/>
+    </include>
+</launch>

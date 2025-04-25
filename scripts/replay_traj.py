@@ -1,4 +1,3 @@
-#Author is Skye Thompson, rory_thompson@brown.edu if you have questions
 import sys
 import copy
 import rospy
@@ -8,6 +7,7 @@ import tf2_geometry_msgs
 import tf2_ros as tf
 from tf2_msgs.msg import TFMessage
 from os import environ
+import numpy as np
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -61,36 +61,31 @@ while not rospy.is_shutdown():
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
         continue
 
+# left_arm_with_jar_transform = make_pose_stamped([0.952415898684, 0.24956536805, 0.985405932473, 
+#                                                 0., 0., 1., 0.], "world")
 
-left_arm_with_jar_transform = make_pose_stamped([0.952415898684, 0.24956536805, 0.985405932473, 
-                                                 -0.267303841149, -0.706978440889, 0.648261758446, -0.0921240096897], "world")
-    
+# pose_goal =  tf2_geometry_msgs.PoseStamped()
+# pose_goal.header.stamp = rospy.Time(0)
+# pose_goal.header.frame_id = "world"
+# pose_goal.pose = left_arm_with_jar_transform.pose
 
-pose_goal =  tf2_geometry_msgs.PoseStamped()
-pose_goal.header.stamp = rospy.Time(0)
-pose_goal.header.frame_id = "world"
-pose_goal.pose = left_arm_with_jar_transform.pose
-
-plan = left_move_group.plan(pose_goal)
-raw_input("Press Enter to execute the next step of the plan...")
-left_move_group.execute(plan)
+# plan = left_move_group.plan(pose_goal)
+# raw_input("Press Enter to execute the next step of the plan...")
+# left_move_group.execute(plan)
 
 #Skill Pose Sequence
-skill_frame =  "iiwa_left_link_ee"
+# skill_frame =  "iiwa_right_link_ee"
+skill_frame = "multisense/left_camera_optical_frame"
+transform_sequence = []
+positions = np.load("/home/wyc/Downloads/positions.npy")
+for position in positions:
+    position = position.tolist()
+    transform = make_pose_stamped([position[0], position[1], position[2], 
+                                    -0.135, 0.187, 0.690, 0.686], skill_frame)
+    transform_sequence.append(transform)
 
-# pre_knife_transform = make_pose_stamped([.25, 0, .15, 0, 1, 0, 0], skill_frame)
-pre_knife_transform = make_pose_stamped([-0.16801576099,-0.188542169941, 0.487630045861, -0.889902080041, 0.455919310276, 0.0101620538664, -0.0104212819544], skill_frame)
-# in_jar_transform = make_pose_stamped([.12, 0, .15, 0, 1, 0, 0], skill_frame)
-in_jar_transform = make_pose_stamped([-0.0711256509843, -0.0929858718775, 0.478046790613, 
-                                      -0.879336990182, 0.47578871884, 0.00161086222869, -0.0197220142316], skill_frame)
-# scoop_transform = make_pose_stamped([.12, 0, .14, 0.1947092, 0.9605305, 0.1947092, -0.0394695], skill_frame)    
-scoop_transform = make_pose_stamped([-0.16365656541, -0.00115047817656, 0.457351071747, 
-                                     -0.756404495351, 0.624516262842, -0.193544499784, -0.0192925753313], skill_frame)
-# post_scoop_transform = make_pose_stamped([.25, 0, .14, 0.1947092, 0.9605305, 0.1947092, -0.0394695], skill_frame)
-post_scoop_transform = make_pose_stamped([-0.16801576099,-0.188542169941, 0.4573510717471, 
-                                          -0.756404495351, 0.624516262842, -0.193544499784, -0.0192925753313], skill_frame)
-transform_sequence = [pre_knife_transform, in_jar_transform, scoop_transform, post_scoop_transform]
 world_tranform_sequence = [tfBuffer.transform(transform, "world", ) for transform in transform_sequence]
+
 
 #plan to each pose in sequence
 for pose in world_tranform_sequence:
@@ -98,13 +93,13 @@ for pose in world_tranform_sequence:
     rospy.sleep(1.0)
     pose_goal =  tf2_geometry_msgs.PoseStamped()
     pose_goal.header.stamp = rospy.Time(0)
-    pose_goal.header.frame_id = "world"
+    pose_goal.header.frame_id = "multisense/left_camera_optical_frame"
     pose_goal.pose = pose.pose
 
     plan = right_move_group.plan(pose_goal)
 
     raw_input("Press Enter to execute the next step of the plan...")
-    right_move_group.execute(plan)
+    # right_move_group.execute(plan)
     # rospy.sleep(3.0)
     # while not rospy.is_shutdown():
     #     try:

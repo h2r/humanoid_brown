@@ -66,11 +66,6 @@ def joint_traj_state_callback(data):
 
 
 if __name__ == "__main__":
-	rospy.init_node('left_arm_commander', anonymous=True)
+	rospy.init_node('dorfl_arm_commander', anonymous=True)
 	rospy.Subscriber("/dorfl/iiwa_left/PositionTrajectoryController/state", JointTrajectoryControllerState, joint_traj_state_callback)
 	rospy.spin()
-	#  while not rospy.is_shutdown():
-	# # 	pub.publish(action_msg)
-	# # 	# right_arm.set_target(right_arm.cartesian_state[:3], right_arm.cartesian_state[3:])
-	# # 	# right_arm.publish_target_command()
-	# # 	rate.sleep()
