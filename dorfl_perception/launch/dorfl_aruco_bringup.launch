@@ -1,0 +1,68 @@
+<!-- Launch the requested nodes to track AR tags using ar_track_alvar -->
+<launch>
+
+    <!-- =========  GLOBAL ARGS  ========= -->
+
+    <!-- Require the path to a YAML file configuring the AR marker system -->
+    <arg name="apriltags_yaml_path"/>
+
+    <!-- Require a path specifying where estimated object poses are output -->
+    <arg name="object_world_yaml_path"/>
+
+    <!-- <arg name="small_bundle_xml_path"/>
+    <arg name="med_bundle_xml_path"/> -->
+    <arg name="small_bundle_xml_path" default="$(find dorfl_perception)/config/markerdata_shelf.xml"/>
+
+    <!-- Marker sizes (cm) -->
+    <!-- Tracker parameters -->
+    <arg name="max_new_marker_error" default="0.08"/>
+    <arg name="max_track_error" default="0.2"/>
+
+    <!-- topics -->
+    <arg name="camera_image_topic" default="/multisense/left/image_rect_color"/>
+    <arg name="camera_info_topic" default="/multisense/left/image_rect_color/camera_info"/>
+
+    <!-- =========  ACTIVATION FLAGS (all false by default)  ========= -->
+
+    <group ns="aruco_pb_jar">
+        <arg name="marker1" default="582"/>
+        <arg name="marker2" default="583"/>
+        <node pkg="aruco_ros" type="double" name="aruco_simple">    
+            <remap from="/camera_info" to="$(arg camera_info_topic)" />
+            <remap from="/image" to="$(arg camera_image_topic)" />
+            <param name="image_is_rectified" value="True"/>
+            <param name="marker_size" value="0.055"/>
+            <param name="marker_id1" value="$(arg marker1)"/>
+            <param name="marker_id2" value="$(arg marker2)"/>
+            <param name="parent_name" value="multisense/left_camera_optical_frame"/>
+            <param name="child_name1" value="marker_$(arg marker1)" />
+            <param name="child_name2" value="marker_$(arg marker2)" />
+        </node>
+    </group>
+    <group ns="aruco_knife">
+        <node pkg="aruco_ros" type="single" name="aruco_single">
+            <remap from="/camera_info" to="$(arg camera_info_topic)" />
+            <remap from="/image" to="$(arg camera_image_topic)" />
+            <param name="image_is_rectified" value="True"/>
+            <param name="marker_size"        value="0.06"/>
+            <param name="marker_id"          value="584"/>
+            <param name="reference_frame"    value="world"/>   <!-- frame in which the marker pose will be refered -->
+            <param name="camera_frame"       value="multisense/left_camera_optical_frame"/>
+            <param name="marker_frame"       value="marker_584" />
+        </node>
+    </group>
+    <group ns="aruco_shelf">
+        <node pkg="aruco_ros" type="single" name="aruco_single">
+            <remap from="/camera_info" to="$(arg camera_info_topic)" />
+            <remap from="/image" to="$(arg camera_image_topic)" />
+            <param name="image_is_rectified" value="True"/>
+            <param name="marker_size"        value="0.1"/>
+            <param name="marker_id"          value="585"/>
+            <param name="reference_frame"    value="world"/>   <!-- frame in which the marker pose will be refered -->
+            <param name="camera_frame"       value="multisense/left_camera_optical_frame"/>
+            <param name="marker_frame"       value="marker_585" />
+        </node>
+    </group>
+    <node name="yaml_static_tf" pkg="dorfl_perception" type="static_tf_publisher.py" output="screen" required="true"/>
+
+</launch>

@@ -1,21 +1,33 @@
 # Specify AprilTag-object relative transforms, tag sizes, and which cameras detect which tag sizes
 tags:
-  tag_76: # bundle master
-    tag_size_cm: 7.62
+  tag_585: # bundle master
+    tag_size_cm: 10
     relative_frames:
       shelf: [-0.0635, -0.1651, 0.0588, 0, 0, 0] #distances in meters [x,y,z,roll,pitch,yaw]
-    bundle: True
+    bundle: False
 
-  tag_: # bundle master
-    tag_size_cm: 4.0 # Length (cm) of side of tag's black square
+  tag_582: # bundle master
+    tag_size_cm: 5.5 # Length (cm) of side of tag's black square
     relative_frames:
-      pb: [0.1, 0, 0, 0, 0, 0] # w.r.t. tag
-    bundle: True
+      pb_jar: [0, 0, -0.15, 0, 0, 0] # w.r.t. tag
+    bundle: False
+  
+  tag_583:
+    tag_size_cm: 6.0
+    relative_frames:
+      bread: [0, -0.15, -0.005, 0, 0, 0]
+    bundle: False
+  
+  tag_584:
+    tag_size_cm: 6.0
+    relative_frames:
+      cup: [0, 0.11, 0, 0, 0, -3.14]
+    bundle: False
 
-  tag_:
-    tag_size_cm: 
-    relative_frames:
-      pb: [0,0,0,0,0,0]
+  # tag_90:
+  #   tag_size_cm: 
+  #   relative_frames:
+  #     pb2: [0,0,11,0,0,0]
 
 cameras:
   left:
