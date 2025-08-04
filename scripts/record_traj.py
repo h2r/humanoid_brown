@@ -6,7 +6,7 @@ from geometry_msgs.msg import TransformStamped
 #!/usr/bin/env python
 
 
-def collect_tf(src_frame='torso', target_frame='left_ee'):
+def collect_tf(src_frame='iiwa_right_link_ee', target_frame='iiwa_left_link_ee'):
     rospy.init_node('tf_collector', anonymous=True)
     rate = rospy.Rate(10)  # 10 Hz
 
@@ -18,6 +18,7 @@ def collect_tf(src_frame='torso', target_frame='left_ee'):
     try:
         while not rospy.is_shutdown():
             try:
+                print("Collecting transform from {} to {}".format(src_frame, target_frame))
                 transform = tf_buffer.lookup_transform(src_frame, target_frame, rospy.Time(0), rospy.Duration(0.2))
                 rospy.loginfo("Transform: %s", transform)
                 tf_hist.append([
@@ -27,7 +28,8 @@ def collect_tf(src_frame='torso', target_frame='left_ee'):
                     transform.transform.rotation.x,
                     transform.transform.rotation.y,
                     transform.transform.rotation.z,
-                    transform.transform.rotation.w
+                    transform.transform.rotation.w,
+                    transform.header.stamp.to_sec()
                 ])
             except tf2_ros.LookupException as e:
                 rospy.logwarn("Transform not available: %s", e)
@@ -41,9 +43,9 @@ def collect_tf(src_frame='torso', target_frame='left_ee'):
 
 if __name__ == '__main__':
     try:
-        tf_hist = collect_tf("torso", "iiwa_right_link_ee")
+        tf_hist = collect_tf(src_frame='iiwa_left_link_ee', target_frame='iiwa_right_link_ee')
         with open("tf_hist.csv", "w") as f:
-            f.write("x,y,z,qx,qy,qz,qw\n")
+            f.write("x,y,z,qx,qy,qz,qw,time\n")
             for transform in tf_hist:
                 f.write(",".join(map(str, transform)) + "\n")
         rospy.loginfo("TF history saved to tf_hist.csv")
