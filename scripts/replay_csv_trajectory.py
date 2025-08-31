@@ -476,8 +476,11 @@ def main():
             
             # Ask for user confirmation before executing
             try:
-                raw_input("Press Enter to execute the trajectory on the robot (Ctrl+C to cancel)...")
-                
+                result = raw_input("Press Enter to execute the trajectory on the robot (Ctrl+C/c to cancel)...")
+                if result.lower() == 'c':
+                    rospy.loginfo("Trajectory execution cancelled by user")
+                    return
+
                 rospy.loginfo("Executing joint trajectory...")
                 success = execute_joint_trajectory(
                     joint_trajectory_client, 

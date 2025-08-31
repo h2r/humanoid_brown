@@ -42,12 +42,23 @@ def collect_tf(src_frame='iiwa_right_link_ee', target_frame='iiwa_left_link_ee')
     return tf_hist
 
 if __name__ == '__main__':
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(description='Collect TF transforms between two frames.')
+    parser.add_argument('--src_frame', type=str, default='iiwa_left_link_ee', help='Source frame')
+    parser.add_argument('--target_frame', type=str, default='iiwa_right_link_ee', help='Target frame')
+    parser.add_argument('--skill_name', type=str, required=True, help='Skill name for output file')
+    args = parser.parse_args()
+
     try:
-        tf_hist = collect_tf(src_frame='iiwa_left_link_ee', target_frame='iiwa_right_link_ee')
-        with open("tf_hist.csv", "w") as f:
+        tf_hist = collect_tf(src_frame=args.src_frame, target_frame=args.target_frame)
+        if not os.path.exists("trajs"):
+            os.makedirs("trajs", exist_ok=True)
+        with open("trajs/skill_{}.csv".format(args.skill_name), "w") as f:
             f.write("x,y,z,qx,qy,qz,qw,time\n")
             for transform in tf_hist:
                 f.write(",".join(map(str, transform)) + "\n")
-        rospy.loginfo("TF history saved to tf_hist.csv")
+        rospy.loginfo("TF history saved to trajs/skill_{}.csv".format(args.skill_name))
     except rospy.ROSInterruptException:
         pass
