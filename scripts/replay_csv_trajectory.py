@@ -314,6 +314,30 @@ def publish_trajectory_as_tfs(
     if fk_poses:
         rospy.loginfo("  - fk_point_* frames show FK verification from IK joint solutions")
 
+def move_to_first_trajectory_point(move_group, first_joint_positions):
+    """Move robot to the first trajectory point using MoveIt"""
+    try:
+        rospy.loginfo("Moving to first trajectory point...")
+        
+        # Set joint target
+        move_group.set_joint_value_target(first_joint_positions)
+        
+        # Plan and execute
+        success = move_group.go(wait=True)
+        move_group.stop()  # Ensures no residual movement
+        move_group.clear_pose_targets()
+        
+        if success:
+            rospy.loginfo("Successfully moved to first trajectory point")
+            return True
+        else:
+            rospy.logwarn("Failed to move to first trajectory point")
+            return False
+            
+    except Exception as e:
+        rospy.logerr("Error moving to first trajectory point: {}".format(e))
+        return False
+
 def execute_joint_trajectory(joint_trajectory_client, joint_names, joint_positions_list, duration_per_point=1.0):
     """Execute a joint trajectory using action client"""
     if not joint_positions_list:
@@ -342,6 +366,15 @@ def execute_joint_trajectory(joint_trajectory_client, joint_names, joint_positio
     return result is not None
 
 def main():
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(description='Replay CSV trajectory using frame transforms.')
+    parser.add_argument('--src_frame', type=str, default='iiwa_left_link_ee', help='Source frame')
+    parser.add_argument('--target_frame', type=str, default='iiwa_right_link_ee', help='Target frame')
+    parser.add_argument('--skill_name', type=str, required=True, help='Skill name for output file')
+    args = parser.parse_args()
+
     # Initialize ROS node
     rospy.init_node('csv_trajectory_replayer', anonymous=True)
     
@@ -355,7 +388,12 @@ def main():
     robot = moveit_commander.RobotCommander(robot_description="dorfl/robot_description")
     right_move_group = moveit_commander.MoveGroupCommander("right_arm", robot_description="dorfl/robot_description")
     left_move_group = moveit_commander.MoveGroupCommander("left_arm", robot_description="dorfl/robot_description")
-    
+
+
+    # tf buffer
+    tf_buffer = tf2_ros.Buffer(cache_time=rospy.Duration(60.0)) # long cache time
+    tf_listener = tf2_ros.TransformListener(tf_buffer)
+
     # Initialize IK service client
     ik_service_name = "/dorfl/compute_ik"
     rospy.loginfo("Waiting for IK service: {}".format(ik_service_name))
@@ -380,8 +418,8 @@ def main():
     rospy.sleep(1.0)  # Allow ROS to initialize
     
     # Configuration
-    csv_file_path = "/home/wyc/iiwa_ros_ws/src/humanoid_brown/scripts/tf_hist.csv"
-    
+    csv_file_path = "trajs/skill_{}.csv".format(args.skill_name)
+
     # Sampling configuration
     ik_sample_rate = 3  # Process every Nth pose for IK (1 = all poses, 10 = every 10th)
     tf_sample_rate = 3  # Publish every Nth pose as TF (1 = all poses, 5 = every 5th)
@@ -404,15 +442,28 @@ def main():
         rospy.loginfo("Converting to relative poses...")
         # relative_poses = convert_to_relative_poses(csv_poses)
         
-        # Get current left hand end-effector pose
-        rospy.loginfo("Getting current left hand pose...")
-        current_left_ee_pose = get_current_ee_pose(left_move_group)
-        rospy.loginfo("Current left EE pose: pos=({:.3f}, {:.3f}, {:.3f})".format(
-            current_left_ee_pose[0], current_left_ee_pose[1], current_left_ee_pose[2]))
+        # Get current source frame pose
+        rospy.loginfo("Getting current source frame pose: {}".format(args.src_frame))
+        use_left_ee_as_ref = False
+        if use_left_ee_as_ref:
+            current_src_ee_pose = get_current_ee_pose(left_move_group)
+        else:
+            current_src_ee_pose_ros = tf_buffer.lookup_transform("world", args.src_frame, rospy.Time(0), rospy.Duration(1.0)).transform
+            current_src_ee_pose = [
+                current_src_ee_pose_ros.translation.x,
+                current_src_ee_pose_ros.translation.y,
+                current_src_ee_pose_ros.translation.z,
+                current_src_ee_pose_ros.rotation.x,
+                current_src_ee_pose_ros.rotation.y,
+                current_src_ee_pose_ros.rotation.z,
+                current_src_ee_pose_ros.rotation.w
+            ]
+        rospy.loginfo("Current source EE pose: pos=({:.3f}, {:.3f}, {:.3f})".format(
+            current_src_ee_pose[0], current_src_ee_pose[1], current_src_ee_pose[2]))
         
         # Apply relative trajectory to current left hand pose to get target poses for right hand
         rospy.loginfo("Computing target poses for right hand...")
-        target_poses = apply_relative_poses_to_current(csv_poses, current_left_ee_pose)
+        target_poses = apply_relative_poses_to_current(csv_poses, current_src_ee_pose)
         
         rospy.loginfo("Computing IK for {} target poses...".format(len(target_poses)))
         
@@ -464,15 +515,28 @@ def main():
         
         # Publish trajectory as TF transforms for visualization
         rospy.loginfo("Publishing trajectory as TF transforms...")
-        publish_trajectory_as_tfs(target_poses, csv_poses, current_left_ee_pose, 
+        publish_trajectory_as_tfs(target_poses, csv_poses, current_src_ee_pose, 
                                   joint_solutions, fk_poses, ik_sample_rate, tf_sample_rate)
         
         rospy.loginfo("TF publishing completed. Check RViz to visualize the trajectory.")
+        out = raw_input("continue?")
         
         # Execute joint trajectory if IK solutions are available
         if joint_solutions:
             rospy.loginfo("=== TRAJECTORY EXECUTION ===")
             rospy.loginfo("Ready to execute trajectory with {} joint solutions".format(len(joint_solutions)))
+            
+            # Move to first trajectory point using MoveIt before starting replay
+            if joint_solutions:
+                first_joint_positions = joint_solutions[0]
+                rospy.loginfo("Moving to first trajectory point before replay...")
+                
+                move_success = move_to_first_trajectory_point(right_move_group, first_joint_positions)
+                if not move_success:
+                    rospy.logwarn("Failed to move to first trajectory point. Continuing with trajectory execution...")
+                
+                rospy.sleep(1.0)  # Brief pause after reaching first point
+                raw_input("Press enter to continue...")
             
             # Ask for user confirmation before executing
             try:

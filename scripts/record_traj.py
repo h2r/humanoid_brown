@@ -1,17 +1,15 @@
 import rospy
 import tf2_ros
-import tf2_geometry_msgs
-from geometry_msgs.msg import TransformStamped
 
 #!/usr/bin/env python
 
 
-def collect_tf(src_frame='iiwa_right_link_ee', target_frame='iiwa_left_link_ee'):
+def collect_tf(src_frame='iiwa_left_link_ee', target_frame='iiwa_right_link_ee'):
     rospy.init_node('tf_collector', anonymous=True)
     rate = rospy.Rate(10)  # 10 Hz
 
     tf_buffer = tf2_ros.Buffer()
-    tf_listener = tf2_ros.TransformListener(tf_buffer)
+    tf2_ros.TransformListener(tf_buffer)
 
     tf_hist = []
 
@@ -53,6 +51,10 @@ if __name__ == '__main__':
 
     try:
         tf_hist = collect_tf(src_frame=args.src_frame, target_frame=args.target_frame)
+        save_or_not = raw_input("Save? ([y]/n)")
+        if save_or_not.lower() == 'n':
+            rospy.loginfo("Not saving TF history.")
+            exit(0)
         if not os.path.exists("trajs"):
             os.makedirs("trajs", exist_ok=True)
         with open("trajs/skill_{}.csv".format(args.skill_name), "w") as f:
